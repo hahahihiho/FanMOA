@@ -14,8 +14,15 @@ docker-compose -f docker-compose.yml kill && docker-compose -f docker-compose.ym
 rm -f ~/.hfc-key-store/*
 
 # remove chaincode docker images
-docker rm $(docker ps -aq)
-docker rmi $(docker images dev-* -q)
+cons=$(docker ps -aq)
+if [ -n "$cons" ];  then
+        docker rm -f $(docker ps -aq)
+fi
+
+imgs=$(docker images dev-* -q)
+if [ -n "$imgs" ];  then
+        docker rmi -f $(docker images dev-* -q)
+fi
 
 docker network prune --force
 

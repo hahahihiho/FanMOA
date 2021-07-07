@@ -22,7 +22,6 @@ router.get('/', function (req, res) {
 // define the about route
 router.get('/ticketlist', function (req, res) {
     const ei = req.query.ei;
-    console.log(ei);
     if(ei==undefined){
         const data = data_util.event;
         const ids = data_util.mytickets;
