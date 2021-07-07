@@ -22,12 +22,17 @@ router.get('/', function (req, res) {
 // define the about route
 router.get('/ticketlist', function (req, res) {
     const ei = req.query.ei;
+    console.log(ei);
     if(ei==undefined){
         const data = data_util.event;
         const ids = data_util.mytickets;
-
+        const result = [];
+        ids.forEach(id=>{
+            i = data.ids.indexOf(id);
+            result.push(data.names[i]);
+        })
         const entry = data_util.makeEntry(true,result,null);
-        res.render('ticketList.ejs');
+        res.render('ticketList.ejs',entry);
     }else{
         // generate qrCode
         const i = data.ids.indexOf(ei);

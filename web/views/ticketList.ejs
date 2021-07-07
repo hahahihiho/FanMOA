@@ -1,8 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%- include('partials/head') %>
+</head>
+<body>
+<%- include('partials/header') %>
 
-<%- include('partials/nav') %>
+<div>
+    <% if(success) { %>
+        <% result.forEach(name=>{ %>
+            <div>
+                <%= name %>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div><%= error %></div>
+    <% } %>
+</div>
 
-
-index
-    
 </body>
 </html>
+
+
+    
