@@ -1,8 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%- include('partials/head') %>
+</head>
+<body>
+<%- include('partials/header') %>
 
-<%- include('partials/nav') %>
-
-
-index
-    
+<div>
+    <% if(success) { %>
+        <ul>
+        <% Object.keys(result).forEach(k=> { %>
+            <li>
+                <%= k %> : <%= result[k] %>
+            </li>
+        <%}) %>
+        </ul>
+    <% } else { %>
+        <div><%= error %></div>
+    <% } %>
+</div>
+<div>
+    <button>
+        <a href="/content/payment?ei=" onclick="location.href=this.href+<%= result.ids %>;return false;">참여</a>
+    </button>
+</div>
 </body>
 </html>
+
+
+    

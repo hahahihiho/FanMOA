@@ -1,8 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%- include('partials/head') %>
+</head>
+<body>
+<%- include('partials/header') %>
 
-<%- include('partials/nav') %>
+<div>
+    <% if(success) { %>
+        <% for(var i=0; i<result.ids.length; i++) { %>
+            <a href=<%= result.links[i] %>> <%= result.titles[i] %></a>
+        <%} %>
+    <% } else { %>
+        <div><%= error %></div>
+    <% } %>
+</div>
 
-
-index
-    
 </body>
 </html>
+
+
+    

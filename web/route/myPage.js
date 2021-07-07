@@ -1,4 +1,5 @@
 var express = require('express')
+const data_util = require('../data/data')
 var router = express.Router()
 
 // middleware that is specific to this router
@@ -9,20 +10,39 @@ router.use(function timeLog (req, res, next) {
 })
 // define the home page route
 router.get('/', function (req, res) {
-    res.render('myPage.ejs');
+    const data = data_util.mypage
+
+    let result = {
+        mypage_list : data.mypage_list,
+        mypage_link : data.mypage_link
+    };
+    const entry = data_util.makeEntry(true,result,null);
+    res.render('myPage.ejs',entry);
 })
 // define the about route
 router.get('/ticketlist', function (req, res) {
-    const mi = req.query.mi;
-    if(mi==undefined){
+    const ei = req.query.ei;
+    if(ei==undefined){
+        const data = data_util.event;
+        const ids = data_util.mytickets;
+
+        const entry = data_util.makeEntry(true,result,null);
         res.render('ticketList.ejs');
     }else{
         // generate qrCode
+        const i = data.ids.indexOf(ei);
+        const keys = Object.keys(data);
+    
+        let result = {};
+        keys.forEach((k) => {
+            result[k] = data[k][i];
+        })
+        const entry = data_util.makeEntry(true,result,null);
         res.render("qrCode.ejs");
     }
 })
-router.get('/registermeeting', function (req, res) {
-    res.render('registerMeeting.ejs');
+router.get('/registerevent', function (req, res) {
+    res.render('registerEvent.ejs');
 })
 
 router.get('/refund', function (req, res) {
