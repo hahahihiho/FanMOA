@@ -1,10 +1,11 @@
 package main
 
-//외부모듈
 import (
 	"fmt"
 	"encoding/json"
 	"strconv"
+	"bytes"
+	"time"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
 )
@@ -39,46 +40,32 @@ const (
 	FINISHED
 	CANCELED
 )
-const (
-	NEW int = iota
-	USED
-	OVER
-)
 
-//init 함수
 func (s *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	return shim.Success(nil)
 }
 
-//invoke 함수
 func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()
 
-	if fn == "registerEvent" {
-		return s.registerEvent(stub, args)
-	} else if fn == "registerUser" {
+	if fn == "registerUser" {
 		return s.registerUser(stub, args)
+	} else if fn == "registerEvent" {
+		return s.registerEvent(stub, args)
 	} else if fn == "putMoney" {
 		return s.putMoney(stub, args)
 	} else if fn == "completeEvent" {
 		return s.completeEvent(stub, args)
 	} else if fn == "refundAll" {
 		return s.refundAll(stub, args)
+	} else if fn == "getUser"{
+		return s.getUser(stub,args)
+	} else if fn == "getEvent"{
+		return s.getEvent(stub,args)
+	} else if fn == "getUserHistory"{
+		return s.getUserHistory(stub,args)
 	}
 	return shim.Error("Not supported smartcontract function name")
-}
-
-func (s *SmartContract) registerEvent(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	if len(args) != 8 {	// id, name, registrant, celebrity, closetime, eventendtime, limitp, fee, | balance, currentp, state
-		return shim.Error("register Event function needs a parameter")
-	}
-	limitp,_ := strconv.Atoi(args[6])
-	fee,_ := strconv.Atoi(args[7])
-	event := Event{Id: args[0], Name: args[1], Registrant: args[2], Celebrity: args[3], CloseTime: args[4], EventEndTime: args[5], LimitP: limitp, Fee: fee, Balance:0, CurrentP: 0, State:REGISTERED}
-	eventAsBytes, _ := json.Marshal(event)
-	stub.PutState(args[0], eventAsBytes)
-
-	return shim.Success([]byte("tx is submitted"))
 }
 
 func (s *SmartContract) registerUser(stub shim.ChaincodeStubInterface, args []string) peer.Response {
@@ -92,14 +79,40 @@ func (s *SmartContract) registerUser(stub shim.ChaincodeStubInterface, args []st
 	return shim.Success([]byte("tx is submitted"))
 }
 
+func (s *SmartContract) registerEvent(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) != 8 {	// id, name, registrant, celebrity, closetime, eventendtime, limitp, fee, | balance, currentp, state
+		return shim.Error("register Event function needs a parameter")
+	}
+	usr_id := args[2]
+	cel_id := args[3]
+	usrAsBytes, uerr := stub.GetState(usr_id)
+	celAsBytes, cerr := stub.GetState(cel_id)
+	if uerr == nil && cerr == nil && usrAsBytes != nil && celAsBytes != nil {
+		limitp,_ := strconv.Atoi(args[6])
+		fee,_ := strconv.Atoi(args[7])
+		event := Event{Id: args[0], Name: args[1], Registrant: args[2], Celebrity: args[3], CloseTime: args[4], EventEndTime: args[5], LimitP: limitp, Fee: fee, Balance:0, CurrentP: 0, State:REGISTERED}
+		eventAsBytes, _ := json.Marshal(event)
+
+		usr := RegisteredUser{}
+		_ = json.Unmarshal(usrAsBytes,&usr)
+		usr.PlannedEvents = append(usr.PlannedEvents,event.Id)
+		usrAsBytes,_ = json.Marshal(usr)
+
+		stub.PutState(event.Id, eventAsBytes)
+		stub.PutState(usr.Id,usrAsBytes)
+		return shim.Success([]byte("tx is submitted"))
+	} else {
+		return shim.Error("No user")
+	}
+}
+
 func (s *SmartContract) putMoney(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	if len(args) != 3 {	// id, event_id, fee
+	if len(args) != 2 {	// id, event_id | fee
 		return shim.Error("input function needs 3 parameters")
 	}
 	// registerUser
 	usr_id:=args[0]
 	evt_id:=args[1]
-	strfee:=args[2]
 	userAsBytes, uerr :=stub.GetState(usr_id)
 	eventAsBytes, eerr := stub.GetState(evt_id)
 	if uerr == nil && eerr == nil {
@@ -110,8 +123,8 @@ func (s *SmartContract) putMoney(stub shim.ChaincodeStubInterface, args []string
 
 		evt := Event{}
 		_ = json.Unmarshal(eventAsBytes, &evt)
-		fee,_ := strconv.Atoi(strfee)
-		evt.Balance += fee
+		evt.CurrentP += 1
+		evt.Balance += evt.Fee
 		eventAsBytes, _ = json.Marshal(evt)
 
 		stub.PutState(usr_id, userAsBytes)
@@ -161,6 +174,81 @@ func (s *SmartContract) refundAll(stub shim.ChaincodeStubInterface, args []strin
 	return shim.Error("Not implemented yet")
 }
 
+// query
+func (s *SmartContract) getUser(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) != 1 {	//user_id
+		return shim.Error("register Event function needs a parameter")
+	}
+	usrAsBytes,_:=stub.GetState(args[0])
+	return shim.Success(usrAsBytes)
+}
+func (s *SmartContract) getEvent(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) != 1 {	//event_id
+		return shim.Error("register Event function needs a parameter")
+	}
+	evtAsBytes,_:=stub.GetState(args[0])
+	return shim.Success(evtAsBytes)
+}
+func (s *SmartContract) getUserHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) != 1 {	//usr_id
+		return shim.Error("register Event function needs a parameter")
+	}
+
+	keyName := args[0]
+	// 로그 남기기
+	fmt.Println("readTxHistory:" + keyName)
+
+	resultsIterator, err := stub.GetHistoryForKey(keyName)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	// buffer is a JSON array containing historic values for the marble
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		response, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"TxId\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(response.TxId)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Value\":")
+		if response.IsDelete {
+			buffer.WriteString("null")
+		} else {
+			buffer.WriteString(string(response.Value))
+		}
+
+		buffer.WriteString(", \"Timestamp\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(time.Unix(response.Timestamp.Seconds, int64(response.Timestamp.Nanos)).String())
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"IsDelete\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(strconv.FormatBool(response.IsDelete))
+		buffer.WriteString("\"")
+
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	// 로그 남기기
+	fmt.Println("readTxHistory returning:\n" + buffer.String() + "\n")
+
+	return shim.Success(buffer.Bytes())
+}
 func main() {
 	err := shim.Start((new(SmartContract)))
 	if err != nil {

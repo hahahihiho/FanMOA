@@ -5,9 +5,9 @@ set -e
 # 변수설정
 # CC_SRC_PATH=github.com/paper-contract/
 # docker base_path : /opt/gopath/src/
-CC_SRC_PATH=chaincode/
+CC_SRC_PATH=chaincode/fanmoa/
 CHANNEL_NAME=mychannel
-CC_NAME=teamate
+CC_NAME=fanmoa
 VERSION=0.9
 CC_RUNTIME_LANGUAGE=go
 
