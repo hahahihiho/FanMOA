@@ -62,6 +62,8 @@ func (s *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return s.getUser(stub,args)
 	} else if fn == "getEvent"{
 		return s.getEvent(stub,args)
+	} else if fn == "getAllEvents"{
+		return s.getAllEvents(stub)
 	} else if fn == "getUserHistory"{
 		return s.getUserHistory(stub,args)
 	}
@@ -188,6 +190,48 @@ func (s *SmartContract) getEvent(stub shim.ChaincodeStubInterface, args []string
 	}
 	evtAsBytes,_:=stub.GetState(args[0])
 	return shim.Success(evtAsBytes)
+}
+func (s *SmartContract) getAllEvents(APIstub shim.ChaincodeStubInterface) peer.Response {
+
+	startKey := "event1"
+	endKey := "event999"
+
+	resultsIterator, err := APIstub.GetStateByRange(startKey, endKey)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	// buffer is a JSON array containing QueryResults
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		// Add a comma before array members, suppress it for the first array member
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		buffer.WriteString("{\"Key\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(queryResponse.Key)
+		buffer.WriteString("\"")
+
+		buffer.WriteString(", \"Record\":")
+		// Record is a JSON object, so we write as-is
+		buffer.WriteString(string(queryResponse.Value))
+		buffer.WriteString("}")
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	fmt.Printf("- get all event:\n%s\n", buffer.String())
+
+	return shim.Success(buffer.Bytes())
 }
 func (s *SmartContract) getUserHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {	//usr_id
