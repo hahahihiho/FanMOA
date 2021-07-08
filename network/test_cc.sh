@@ -28,7 +28,7 @@ sleep 3
 docker exec cli peer chaincode invoke -n $CC_NAME -C $CHANNEL_NAME -c '{"Args":["getUser","user1"]}'
 docker exec cli peer chaincode invoke -n $CC_NAME -C $CHANNEL_NAME -c '{"Args":["getUser","user2"]}'
 docker exec cli peer chaincode invoke -n $CC_NAME -C $CHANNEL_NAME -c '{"Args":["getUser","user3"]}'
-sleep 10
+sleep 3
 
 
 docker exec cli peer chaincode invoke -n $CC_NAME -C $CHANNEL_NAME -c '{"Args":["registerEvent","event1","evvent!","user1","user2","20211010","20220101","100","1000"]}'
@@ -40,4 +40,5 @@ docker exec cli peer chaincode invoke -n $CC_NAME -C $CHANNEL_NAME -c '{"Args":[
 sleep 3
 
 docker exec cli peer chaincode invoke -n $CC_NAME -C $CHANNEL_NAME -c '{"Args":["getUserHistory","user1"]}'
+docker exec cli peer chaincode invoke -n $CC_NAME -C $CHANNEL_NAME -c '{"Args":["getAllEvents"]}'
 
