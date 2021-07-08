@@ -18,8 +18,8 @@ router.use(function timeLog (req, res, next) {
 })
 
 // define the home page route
-router.get('/', function (req, res) {
-    const tx = utils.submitTx("getAllEvents");
+router.get('/', async function (req, res) {
+    const tx = await utils.submitTx("getAllEvents");
     console.log(tx);
     if(tx.success) {
         console.log(tx.result)
