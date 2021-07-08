@@ -8,7 +8,7 @@ const routePage = require('./route/routePage');
 const PORT = 3000;
 const HOST = '0.0.0.0';
 
-// app.use(express.static('views'));
+app.use(express.static('views'));
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
