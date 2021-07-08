@@ -1,6 +1,4 @@
 const express = require('express')
-const utils = require("../util/utils")
-
 const app = express();
 const router = express.Router();
 
@@ -19,11 +17,6 @@ router.use(function timeLog (req, res, next) {
 
 // define the home page route
 router.get('/', function (req, res) {
-    const tx = utils.submitTx("getAllEvents");
-    console.log(tx);
-    if(tx.success) {
-        console.log(tx.result)
-    }
     const ids = data_util.event.ids;
     const success = true;
     const error = null;
