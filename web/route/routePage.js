@@ -18,12 +18,15 @@ router.use(function timeLog (req, res, next) {
 // define the home page route
 router.get('/', function (req, res) {
     const ids = data_util.event.ids;
+    const cost = data_util.event.cost;
     const success = true;
     const error = null;
     const result = {
         ids : ids,
         links : ids.map((id)=>"/content?ei="+id),
-        titles : ids.map((id)=>"Fan meeting "+id)
+        titles : ids.map((id)=>"Fan meeting "+id),
+        cost : cost,
+        price : cost.map((price)=> price +"원")
         // need to add thumbn ail
     }
     let entry = data_util.makeEntry(success,result,error);
