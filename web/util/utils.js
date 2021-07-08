@@ -58,4 +58,8 @@ const get_contract = async () => {
     return {"success":true,"contract":contract,"gateway":gateway}
 }
 
-exports = module.exports = {submitTx};
+const makeEntry = (success,result,error) => {
+    return {success:success, result:result, error: error};
+}
+
+exports = module.exports = {submitTx,makeEntry};
