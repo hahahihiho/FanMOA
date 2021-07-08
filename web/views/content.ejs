@@ -4,26 +4,49 @@
 <%- include('partials/head') %>
 </head>
 <body>
+<%- include('partials/nav') %>
 <%- include('partials/header') %>
 
 <div>
     <% if(success) { %>
-        <ul>
-        <% Object.keys(result).forEach(k=> { %>
-            <li>
-                <%= k %> : <%= result[k] %>
-            </li>
-        <%}) %>
-        </ul>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="product-gallery product-gallery-vertical">
+                        <figure class="product-main-image">
+                            <img id="product-zoom" src="" alt="product image">
+                        </figure><!-- End .product-main-image -->
+                </div><!-- End .product-gallery -->
+            </div><!-- End .col-md-6 -->
+            <div class="col-md-6">
+                <div class="product-details">
+                    <h1 class="fw-bolder"><a href=<%= result.links[i] %>> <%= result.titles[i] %></a></h1>
+                    <!--<h1 class="product-title">Dark yellow lace cut out swing dress</h1> End .product-title -->
+                    <div class="product-price">
+                        <a href=<%= result.links[i] %>> <%= result.price[i] %></a>
+                    </div><!-- End .product-price -->
+                    <div class="product-content">
+                        <ul>
+                                    <% Object.keys(result).forEach(k=> { %>
+                                        <li>
+                                            <%= k %> : <%= result[k] %>
+                                        </li>
+                                    <%}) %>
+                                    </ul>
+                                </div><!-- End .product-content -->
+                                <div class="product-details-action">
+                                    <a href="/content/payment?ei=" class="btn-product btn-cart"><span>참여하기</span></a>
+                                    <div class="details-action-wrapper">
+                                        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>장바구니</span></a>
+                                    </div><!-- End .details-action-wrapper -->
+                                </div><!-- End .product-details-action -->
+                            </div>
+                        </div>
+                    </div>
     <% } else { %>
         <div><%= error %></div>
     <% } %>
 </div>
-<div>
-    <button>
-        <a href="/content/payment?ei=" onclick="location.href=this.href+<%= result.ids %>;return false;">참여</a>
-    </button>
-</div>
+<%- include('partials/content plugins') %>
 </body>
 </html>
 
