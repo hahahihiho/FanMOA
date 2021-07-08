@@ -22,12 +22,13 @@ router.get('/', async function (req, res) {
     if(tx.success) {
         console.log(tx.result)
         const event_list = tx.result.map(e => e.Key);
-        
+        const prices = tx.result.map(e => e.Record.Fee)
         const ids = event_list;
         result = {
             ids : ids,
             links : ids.map((id)=>"/content?ei="+id),
-            titles : ids.map((id)=>"Fan meeting "+id)
+            titles : ids.map((id)=>"Fan meeting "+id),
+            prices : prices 
             // need to add thumbn ail
         }
     } else {
