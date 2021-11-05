@@ -1,0 +1,11 @@
+﻿설명,이름,태그
+이벤트 아이디,Id,string
+이벤트 이름,Name,string
+등록자,Registrant,string
+행사주체,Celebrity,string
+상태,State,string
+모집종료,CloseTime,int
+행사종료,EventEndTime,int
+모집인원수,LimitP,int
+현재 인원수,NowP,int
+비용,Fee,int

@@ -1,0 +1,6 @@
+﻿이름,태그,설명
+UserId,string,
+Balance,int,
+plannedEvents,[]string,
+paidEvents,[]string,
+,,
