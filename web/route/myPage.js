@@ -1,5 +1,6 @@
 var express = require('express')
 const data_util = require('../data/data')
+const utils = require("../util/utils")
 var router = express.Router()
 
 // middleware that is specific to this router
@@ -16,7 +17,7 @@ router.get('/', function (req, res) {
         mypage_list : data.mypage_list,
         mypage_link : data.mypage_link
     };
-    const entry = data_util.makeEntry(true,result,null);
+    const entry = utils.makeEntry(true,result,null);
     res.render('myPage.ejs',entry);
 })
 // define the about route
@@ -30,7 +31,7 @@ router.get('/ticketlist', function (req, res) {
             i = data.ids.indexOf(id);
             result.push(data.names[i]);
         })
-        const entry = data_util.makeEntry(true,result,null);
+        const entry = utils.makeEntry(true,result,null);
         res.render('ticketList.ejs',entry);
     }else{
         // generate qrCode
@@ -41,7 +42,7 @@ router.get('/ticketlist', function (req, res) {
         keys.forEach((k) => {
             result[k] = data[k][i];
         })
-        const entry = data_util.makeEntry(true,result,null);
+        const entry = utils.makeEntry(true,result,null);
         res.render("qrCode.ejs");
     }
 })
