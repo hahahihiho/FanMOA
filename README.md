@@ -31,8 +31,5 @@
 	* deploy_cc.sh 
 * web
 	* `npm install`
-	* ```
-	node enrollAdmin
-	node registerUser
-	```
+	* `node enrollAdmin` & `node registerUser`
 	* `node index.js`
