@@ -1,28 +1,34 @@
 # FanMOA
 
 ## Structure
-* Hyperledger-fabric
-* Chaincode
-* Web
+* Linux(ubuntu)
+    * Hyperledger-fabric
+    * Chaincode(golang)
+    * Web(nodejs :express, ejs)
 
-## What you need to prepare for 
-* hyperledger-fabric
-	* linux(ubuntu)
-	* cryptogen, configtxgen
-	* docker,docker-compose
+## What we need to install
+* install fabric v1.4
+	* prerequisites
+		- cURL
+		- docker&docker-compose
+		- GO, GOPATH
+	- ref : https://hyperledger-fabric.readthedocs.io/en/release-1.4/prereqs.html	
+	- ref : https://hyperledger-fabric.readthedocs.io/en/release-1.4/install.html
+	
 
-* chaincode
-	* golang
-
-* web
-	* nodejs (express, ejs)
-
-## How to start it
+## How to run
+* install
+	1. install.sh (install hyperledger)(+ docker, golang, nodejs)
+	2. setting.sh (symbolic link setting)
 * hyperledger-fabric
     1. generate.sh (make config files)
     2. start.sh (create network)
 * chaincode
 	* deploy_cc.sh 
 * web
-	* run enrollAdmin, registerUser
-	* run index.js
+	* `npm install`
+	* ```
+	node enrollAdmin
+	node registerUser
+	```
+	* `node index.js`
